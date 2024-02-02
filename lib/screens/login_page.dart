@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:joistic_task/controller/auth_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
+
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+
+    AuthController authController = AuthController();
+
     return  Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.blue.shade300,
@@ -21,7 +27,7 @@ class LoginPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 5),
             child: InkWell(
-              onTap: signInWithGoogle,
+              onTap: authController.signInWithGoogle,
               child: Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -50,26 +56,28 @@ class LoginPage extends StatelessWidget {
   }
 
 
-  signInWithGoogle() async {
-
-    GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    if (googleUser == null) {
-      return; // User canceled the sign-in
-    }
-
-    GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-
-    AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken
-    );
-
-    UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-    print(userCredential.user?.displayName);
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isLoggedIn', true);
-  }
+  // signInWithGoogle() async {
+  //
+  //   GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  //
+  //   if (googleUser == null) {
+  //     return; // User canceled the sign-in
+  //   }
+  //
+  //   GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+  //
+  //   AuthCredential credential = GoogleAuthProvider.credential(
+  //     accessToken: googleAuth?.accessToken,
+  //     idToken: googleAuth?.idToken
+  //   );
+  //
+  //   UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+  //   print(userCredential.user?.displayName);
+  //
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   prefs.setBool('isLoggedIn', true);
+  //
+  //   Get.offAll(() => HomePage());
+  // }
 
 }

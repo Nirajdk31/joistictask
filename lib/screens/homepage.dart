@@ -8,6 +8,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+
+import '../controller/api_fetch_contrloller.dart';
+import 'login_page.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -21,32 +25,14 @@ class _HomePageState extends State<HomePage> {
 
   late Future<List<Map<String, dynamic>>> fetchData;
 
+  ApiController apiController = ApiController();
+
   @override
   void initState() {
     super.initState();
-    fetchData = fetchAlbumData();
+    fetchData = apiController.fetchAlbumData();
   }
 
-  Future<List<Map<String, dynamic>>> fetchAlbumData() async {
-    final response = await http.get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1/photos'));
-
-    if (response.statusCode == 200) {
-      List<dynamic> data = jsonDecode(response.body);
-      return List<Map<String, dynamic>>.from(data);
-    } else {
-       throw showToast('Failed to load album data');
-    }
-  }
-
-   showToast(String message) {
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.black,
-      textColor: Colors.white,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,21 +91,14 @@ class _HomePageState extends State<HomePage> {
                                               Radius.circular(10))),
                                       child: TextButton(
                                         onPressed: () async {
-
-
-                                            print("Logout button pressed");
                                             await GoogleSignIn().signOut();
-                                            print("Google Sign Out completed");
                                             await FirebaseAuth.instance.signOut();
-                                            print("Firebase Sign Out completed");
 
                                             SharedPreferences prefs = await SharedPreferences.getInstance();
                                             prefs.setBool('isLoggedIn', false);
-                                            print("SharedPreferences updated");
 
                                             Navigator.pop(context);
-                                            print("Dialog closed");
-
+                                            Get.to(()=>LoginPage());
 
                                         },
                                         child: Text("Yes, logout",
@@ -158,11 +137,6 @@ class _HomePageState extends State<HomePage> {
                                 ],
                               )
 
-                              // SizedBox(
-                              //   height: Get.height/2,
-                              //   width: Get.width/1.2,
-                              //
-                              // )
                             ],
                           ),
                         ),
@@ -386,5 +360,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
 
 
