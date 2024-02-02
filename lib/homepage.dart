@@ -50,11 +50,149 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: Drawer(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            InkWell(
+              onTap: () async {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context){
+                      return Dialog(
+                        backgroundColor: Colors.transparent,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10)),
+                          width: double.infinity,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset(
+                                'assets/images/logout.jpg',
+                                height: 120,
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.all(5),
+                                child: Text(
+                                  "Comeback Soon !",
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                ),
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Text(
+                                  "Are you sure you want to logout?",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 17),
+                                ),
+                              ),
+                              //SizedBox(height: 20,),
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10))),
+                                      child: TextButton(
+                                        onPressed: () async {
+
+
+                                            print("Logout button pressed");
+                                            await GoogleSignIn().signOut();
+                                            print("Google Sign Out completed");
+                                            await FirebaseAuth.instance.signOut();
+                                            print("Firebase Sign Out completed");
+
+                                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                                            prefs.setBool('isLoggedIn', false);
+                                            print("SharedPreferences updated");
+
+                                            Navigator.pop(context);
+                                            print("Dialog closed");
+
+
+                                        },
+                                        child: Text("Yes, logout",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleSmall
+                                                ?.merge(const TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 20))),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      decoration:  BoxDecoration(
+                                        color: Colors.red.shade400,
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(10),
+                                          bottomRight: Radius.circular(10),
+                                        ),
+                                      ),
+                                      child: TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text("No",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium
+                                                ?.merge(const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20))),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+
+                              // SizedBox(
+                              //   height: Get.height/2,
+                              //   width: Get.width/1.2,
+                              //
+                              // )
+                            ],
+                          ),
+                        ),
+                      );
+                    });
+              },
+              child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.black12,width: 1),
+                    gradient: LinearGradient(
+                      colors: [Colors.blue.shade100, Colors.blue.shade50],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                  ),
+                  child: Text("Logout",style: TextStyle(fontSize: 16,color: Colors.black),)),
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
         //title: Text("Welcome ${FirebaseAuth.instance.currentUser!.displayName!}",style: TextStyle(fontSize: 19,color: Colors.white,fontWeight: FontWeight.bold),),
         backgroundColor: Colors.white,
-        leading: Icon(Icons.menu),
+        leading: InkWell(
+          onTap: (){
+            _scaffoldKey.currentState!.openDrawer();
+          },
+            child: Icon(Icons.menu)),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 15),
@@ -121,56 +259,115 @@ class _HomePageState extends State<HomePage> {
                                 child: Icon(Icons.shopping_bag_rounded,color: Colors.white,)),
                             onTap: () {
                               showModalBottomSheet(
+                                backgroundColor: Colors.transparent,
                                 context: context,
                                 builder: (BuildContext context) {
-                                  return Column(
-                                    children:[
+                                  return Stack(
+                                    children: [
                                       Container(
-                                        decoration: BoxDecoration(
-                                            color: Colors.blue
-                                        ),
-                                        child: Container(
-                                          height: 70,
-                                          width: 50,
-                                          padding: EdgeInsets.all(5),
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle
-                                          ),
-                                          child: Image.network(
-                                            item['thumbnailUrl'],
-                                            width: 60,
-                                            height: 140, // Adjust the height as needed
-                                            fit: BoxFit.cover,
-                                          ),
+                                        color: Colors.transparent,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            SizedBox(height: 50,),
+                                            Expanded(
+                                              child: Container(
+                                                width: double.maxFinite,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.only(
+                                                      topLeft: Radius.circular(20),
+                                                      topRight: Radius.circular(20)),
+                                                ),
+                                                child: SingleChildScrollView(
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(10),
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        SizedBox(
+                                                          height: 60,
+                                                        ),
+                                                        Padding(
+                                                          padding: const EdgeInsets.only(left: 25, right: 25),
+                                                          child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(item['title'].split(' ').take(2).join(' '),maxLines: 1, style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+                                                              SizedBox(height: 5,),
+                                                              Text('Ney york', style: TextStyle(fontSize: 14, color: Colors.black45),),
+                                                              SizedBox(height: 5,),
+                                                              Text('Tech based company and the producer', style: TextStyle(fontSize: 14, color: Colors.black45, fontWeight: FontWeight.bold),),
+                                                              SizedBox(height: 30,),
+                                                              Text('Position', style: TextStyle(fontSize: 14, color: Colors.black45),),
+                                                              SizedBox(height: 2,),
+                                                              Text('Senior UI/UX Designer', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),),
+                                                              SizedBox(height: 30,),
+                                                              Text('Description', style: TextStyle(fontSize: 14, color: Colors.black45),),
+                                                              SizedBox(height: 4,),
+                                                              Text('A UI/UX designer is a professional responsible for creating the user interface (UI) and user experience (UX) of digital products, such as websites, mobile applications, and software. Their role is crucial in ensuring that the product is visually appealing, easy to use, and provides a positive overall experience for the end-users.',
+                                                                style: TextStyle(fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),),
+                                                              SizedBox(height: 10,),
+                                                              InkWell(
+                                                                onTap: (){
+                                                                  final scaffold = ScaffoldMessenger.of(context);
+                                                                  scaffold.removeCurrentSnackBar();
+                                                                  scaffold.showSnackBar(
+                                                                    SnackBar(
+                                                                      content: Text('Applied Successfully'),
+                                                                    ),
+                                                                  );
+                                                                  Navigator.pop(context);
+                                                                },
+                                                                child: Container(
+                                                                  width: double.infinity,
+                                                                  height: 50,
+                                                                  decoration: BoxDecoration(
+                                                                      boxShadow: [
+                                                                        BoxShadow(
+                                                                          color: Colors.blue.withOpacity(0.5),
+                                                                          spreadRadius: 5,
+                                                                          blurRadius: 7,
+                                                                          offset: Offset(0, 3), // changes position of shadow
+                                                                        ),
+                                                                      ],
+                                                                    color: Colors.blue,
+                                                                    borderRadius: BorderRadius.all(Radius.circular(8))
+                                                                  ),
+                                                                  child: Center(child: Text("Apply Now", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,fontSize: 20),)),
+                                                                ),
+                                                              ),
+                                                              SizedBox(height: 20,),
+                                                            ],
+                                                          ),
+                                                        ),
+
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      Column(
-                                      children: [
-                                        Container(
-                                          width: double.infinity,
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.transparent,
-                                            borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(20),
-                                              topRight: Radius.circular(20),
+                                      Positioned(
+                                        top: 12,
+                                        left: 30,
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.white,
+                                          radius: 50,
+                                          child: ClipOval(
+                                            child: Image.network(
+                                              item['thumbnailUrl'],
+                                              width: 80, // Adjust the width as needed
+                                              height: 80,// Adjust the height as needed
+                                              fit: BoxFit.cover,
                                             ),
                                           ),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text('Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                                              SizedBox(height: 10),
-                                              Text('ID: ${item['id']}'),
-                                              Text('Title: ${item['title']}'),
-                                              // Add more details as needed
-                                            ],
-                                          ),
                                         ),
-
-                                      ],
-                                    ),
-                                    ]
+                                      )
+                                    ],
                                   );
                                 },
                               );
@@ -184,152 +381,10 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ),
-          // InkWell(
-          //   onTap: () async {
-          //     showDialog(
-          //         context: context,
-          //         builder: (BuildContext context){
-          //           return Dialog(
-          //             backgroundColor: Colors.transparent,
-          //             child: Container(
-          //               decoration: BoxDecoration(
-          //                   color: Colors.white,
-          //                   borderRadius: BorderRadius.circular(10)),
-          //               width: double.infinity,
-          //               child: Column(
-          //                 mainAxisSize: MainAxisSize.min,
-          //                 children: [
-          //                   Image.asset(
-          //                     'assets/images/logout.jpg',
-          //                     height: 120,
-          //                   ),
-          //                   const Padding(
-          //                     padding: EdgeInsets.all(5),
-          //                     child: Text(
-          //                       "Comeback Soon !",
-          //                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          //                     ),
-          //                   ),
-          //                   const Padding(
-          //                     padding: EdgeInsets.all(10),
-          //                     child: Text(
-          //                       "Are you sure you want to logout?",
-          //                       textAlign: TextAlign.center,
-          //                       style: TextStyle(fontSize: 17),
-          //                     ),
-          //                   ),
-          //                   //SizedBox(height: 20,),
-          //                   Row(
-          //                     mainAxisAlignment:
-          //                     MainAxisAlignment.spaceEvenly,
-          //                     children: [
-          //                       Expanded(
-          //                         child: Container(
-          //                           decoration: const BoxDecoration(
-          //                               color: Colors.white,
-          //                               borderRadius: BorderRadius.all(
-          //                                   Radius.circular(10))),
-          //                           child: TextButton(
-          //                             onPressed: () async {
-          //                               await GoogleSignIn().signOut();
-          //                               FirebaseAuth.instance.signOut();
-          //
-          //                               SharedPreferences prefs = await SharedPreferences.getInstance();
-          //                               prefs.setBool('isLoggedIn', false);
-          //
-          //                               Navigator.pop(context);
-          //                             },
-          //                             child: Text("Yes, logout",
-          //                                 style: Theme.of(context)
-          //                                     .textTheme
-          //                                     .titleSmall
-          //                                     ?.merge(const TextStyle(
-          //                                     color: Colors.red,
-          //                                     fontSize: 20))),
-          //                           ),
-          //                         ),
-          //                       ),
-          //                       Expanded(
-          //                         child: Container(
-          //                           decoration:  BoxDecoration(
-          //                             color: Colors.red.shade400,
-          //                             borderRadius: BorderRadius.only(
-          //                               topLeft: Radius.circular(10),
-          //                               bottomRight: Radius.circular(10),
-          //                             ),
-          //                           ),
-          //                           child: TextButton(
-          //                             onPressed: () {
-          //                               Navigator.pop(context);
-          //                             },
-          //                             child: Text("No",
-          //                                 style: Theme.of(context)
-          //                                     .textTheme
-          //                                     .titleMedium
-          //                                     ?.merge(const TextStyle(
-          //                                     color: Colors.white,
-          //                                     fontSize: 20))),
-          //                           ),
-          //                         ),
-          //                       ),
-          //                     ],
-          //                   )
-          //
-          //                   // SizedBox(
-          //                   //   height: Get.height/2,
-          //                   //   width: Get.width/1.2,
-          //                   //
-          //                   // )
-          //                 ],
-          //               ),
-          //             ),
-          //           );
-          //         });
-          //     },
-          //   child: Container(
-          //       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          //       decoration: BoxDecoration(
-          //         borderRadius: BorderRadius.circular(10),
-          //         border: Border.all(color: Colors.black12,width: 1),
-          //         gradient: LinearGradient(
-          //           colors: [Colors.blue.shade100, Colors.blue.shade50],
-          //           begin: Alignment.centerLeft,
-          //           end: Alignment.centerRight,
-          //         ),
-          //       ),
-          //       child: Text("Logout",style: TextStyle(fontSize: 16,color: Colors.black),)),
-          // ),
         ],
       ),
     );
   }
 }
 
-class CustomMenuClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Paint paint = Paint();
-    paint.color = Colors.white;
-
-    final width = size.width;
-    final height = size.height;
-
-    Path path = Path();
-    path.moveTo(0, 0);
-    path.quadraticBezierTo(0, 8, 10, 16);
-    path.quadraticBezierTo(width-1, height/2-20, width, height/2);
-    path.quadraticBezierTo(width+1, height/2+20, 10, height-16);
-    path.quadraticBezierTo(0, height-8, 0, height);
-
-    path.close();
-
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    return true;
-  }
-
-}
 
